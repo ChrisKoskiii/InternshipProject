@@ -29,6 +29,8 @@ class LoginViewModel: ObservableObject {
   @Published var validUsername = false
   @Published var validPassword = false
   
+  @Published var showAlert = false
+  
   func checkCredentials() {
     validUsername = validEmail()
     validPassword = validate(password1: password1, password2: password2)
@@ -36,6 +38,11 @@ class LoginViewModel: ObservableObject {
     if validUsername && validPassword {
       validationMessage = .validCredentials
     }
+    
+    if validationMessage != .validCredentials || validationMessage != .firstMessage {
+      showAlert = true
+    }
+    
   }
   
   func validEmail() -> Bool {
@@ -84,4 +91,24 @@ class LoginViewModel: ObservableObject {
     return true
   }
   
+  func getAlert() -> String {
+    switch validationMessage {
+    case .firstMessage:
+      return ""
+    case .mustHaveTwoNumbers:
+      return "Password must have two numbers."
+    case .mustHaveCapital:
+      return "Password must have a capital letter."
+    case .mustHaveSpecialCharacter:
+      return "Password must have a special character."
+    case .mustBe6Characters:
+      return "Password must be at least 6 characters."
+    case .invalidUsername:
+      return "Username must be a valid email."
+    case .passwordMismatch:
+      return "Passwords must match."
+    case .validCredentials:
+      return "Account created!"
+    }
+  }
 }
