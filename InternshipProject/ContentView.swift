@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+enum ValidationMessage {
+  case firstMessage
+  case invalidPassword
+  case invalidUsername
+  case validCredentials
+}
+
 struct ContentView: View {
   
   @State private var username: String = ""
@@ -15,6 +22,12 @@ struct ContentView: View {
   
   @State private var validUsername = false
   @State private var validPassword = false
+  
+  @State private var errorShowing = false
+  @State private var usernameErrorShowing = false
+  @State private var createdMessageShowing = false
+  
+  @State private var validationMessage: ValidationMessage = .firstMessage
   
   var body: some View {
     VStack {
@@ -27,62 +40,68 @@ struct ContentView: View {
         
         SecureField("Confirm Password", text: $password2)
       }
-      .back
       
       Button {
-        print("Button tapped")
-        if validate(password: password1) == true {
-          if password1 == password2 {
-            print("Valid")
-            validPassword = true
-            validEmail()
-          }
+        checkCredentials()
+        
+        if validUsername && validPassword {
+          validationMessage = .validCredentials
+        } else if !validPassword {
+          validationMessage = .invalidPassword
+        } else if !validUsername {
+          validationMessage = .invalidUsername
         }
       } label: {
         Text("Create User")
       }
       .padding()
       
-      //Hide error when view loads initially
-      if validPassword != true {
-        Text("Password must contain 1 Uppercase, 1 Special character, and 2 numbers.")
+      switch validationMessage {
+      case .firstMessage:
+        Text("Enter an email and a password.")
+          .foregroundColor(.teal)
+      case .invalidPassword:
+        Text("Password must contain 1 Uppercase, 1 Special character, and 2 numbers")
           .foregroundColor(.red)
-          .multilineTextAlignment(.center)
-      } else if validUsername == true && validPassword == true {
-        Text("Account created!")
+      case .invalidUsername:
+        Text("Must provide a valid email address")
+          .foregroundColor(.red)
+      case .validCredentials:
+        Text("Account Created!")
           .font(.title2)
-          .foregroundColor(Color.teal)
-      } else {
-        Text("Enter a valid")
+          .foregroundColor(.teal)
       }
-      
     }
     .padding()
   }
   
-  func validEmail() {
+  func checkCredentials() {
+    validUsername = validEmail()
+    validPassword = validate(password1: password1, password2: password2)
+  }
+  func validEmail() -> Bool {
     if username.contains("@") {
-      validUsername = true
+      return true
     } else {
-      validUsername = false
+      return false
     }
   }
   
   //currently only checking for one number
-  func validate(password: String) -> Bool {
+  func validate(password1: String, password2: String) -> Bool {
     let capitalLetterRegEx  = ".*[A-Z]+.*"
     let texttest = NSPredicate(format:"SELF MATCHES %@", capitalLetterRegEx)
-    guard texttest.evaluate(with: password) else { return false }
+    guard texttest.evaluate(with: password1) else { return false }
     
     let numberRegEx  = ".*[0-9]+.*"
     let texttest1 = NSPredicate(format:"SELF MATCHES %@", numberRegEx)
-    guard texttest1.evaluate(with: password) else { return false }
+    guard texttest1.evaluate(with: password1) else { return false }
     
     let specialCharacterRegEx  = ".*[!&^%$#@()/_*+-]+.*"
     let texttest2 = NSPredicate(format:"SELF MATCHES %@", specialCharacterRegEx)
-    guard texttest2.evaluate(with: password) else { return false }
+    guard texttest2.evaluate(with: password1) else { return false }
     
-    guard password.count >= 6 else { return false }
+    guard password1.count >= 6 else { return false }
     return true
   }
 }
