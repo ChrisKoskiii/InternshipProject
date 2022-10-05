@@ -23,10 +23,6 @@ struct ContentView: View {
   @State private var validUsername = false
   @State private var validPassword = false
   
-  @State private var errorShowing = false
-  @State private var usernameErrorShowing = false
-  @State private var createdMessageShowing = false
-  
   @State private var validationMessage: ValidationMessage = .firstMessage
   
   var body: some View {
