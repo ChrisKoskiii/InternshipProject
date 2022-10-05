@@ -13,8 +13,7 @@ struct LoginView: View {
   
   @StateObject var viewModel = LoginViewModel()
   
-  @State private var validUsername = false
-  @State private var validPassword = false
+  
   
   var body: some View {
     VStack {
@@ -29,7 +28,7 @@ struct LoginView: View {
       }
       
       Button {
-        checkCredentials()
+        viewModel.checkCredentials()
       } label: {
         Text("Create User")
       }
@@ -64,60 +63,7 @@ struct LoginView: View {
     }
     .padding()
   }
-  
-  func checkCredentials() {
-    validUsername = validEmail()
-    validPassword = validate(password1: viewModel.password1, password2: viewModel.password2)
-    
-    if validUsername && validPassword {
-      viewModel.validationMessage = .validCredentials
-    }
-  }
-  func validEmail() -> Bool {
-    if viewModel.username.contains("@") {
-      return true
-    } else {
-      viewModel.validationMessage = .invalidUsername
-      return false
-    }
-  }
-  
-  func validate(password1: String, password2: String) -> Bool {
-    
-    guard password1 == password2 else {
-      viewModel.validationMessage = .passwordMismatch
-      return false
-    }
-    
-    let amountOfNumbers = password1.filter {"0"..."9" ~= $0 }.count
-    print(amountOfNumbers)
-    guard amountOfNumbers >= 2 else {
-      viewModel.validationMessage = .mustHaveTwoNumbers
-      return false
-    }
-    
-    let capitalLetterRegEx  = ".*[A-Z]+.*"
-    let texttest = NSPredicate(format:"SELF MATCHES %@", capitalLetterRegEx)
-    guard texttest.evaluate(with: password1) else {
-      viewModel.validationMessage = .mustHaveCapital
-      return false
-    }
-    
-    let specialCharacterRegEx  = ".*[!&^%$#@()/_*+-]+.*"
-    let texttest2 = NSPredicate(format:"SELF MATCHES %@", specialCharacterRegEx)
-    guard texttest2.evaluate(with: password1) else {
-      viewModel.validationMessage = .mustHaveSpecialCharacter
-      return false
-      
-    }
-    
-    guard password1.count >= 6 else {
-      viewModel.validationMessage = .mustBe6Characters
-      return false
-    }
-    
-    return true
-  }
+
 }
 
 struct LoginView_Previews: PreviewProvider {
