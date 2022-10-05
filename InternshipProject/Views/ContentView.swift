@@ -43,7 +43,7 @@ struct LoginView: View {
       .background(Color(.systemTeal))
       .foregroundColor(.white)
       .font(.title2)
-      .fontWeight(.semibold)
+      .fontWeight(.medium)
       .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
       
       switch viewModel.validationMessage {
