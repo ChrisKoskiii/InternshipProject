@@ -85,6 +85,9 @@ struct ContentView: View {
   
   //currently only checking for one number
   func validate(password1: String, password2: String) -> Bool {
+    
+    guard password1 == password2 else { return false }
+    
     let capitalLetterRegEx  = ".*[A-Z]+.*"
     let texttest = NSPredicate(format:"SELF MATCHES %@", capitalLetterRegEx)
     guard texttest.evaluate(with: password1) else { return false }
@@ -98,6 +101,7 @@ struct ContentView: View {
     guard texttest2.evaluate(with: password1) else { return false }
     
     guard password1.count >= 6 else { return false }
+    
     return true
   }
 }
