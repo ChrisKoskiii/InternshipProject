@@ -7,27 +7,14 @@
 
 import SwiftUI
 
-enum ValidationMessage {
-  case firstMessage
-  case mustHaveTwoNumbers
-  case mustHaveCapital
-  case mustHaveSpecialCharacter
-  case mustBe6Characters
-  case invalidUsername
-  case passwordMismatch
-  case validCredentials
-}
 
-struct ContentView: View {
+
+struct LoginView: View {
   
-  @State private var username: String = ""
-  @State private var password1: String = ""
-  @State private var password2: String = ""
+  @StateObject var viewModel = LoginViewModel()
   
   @State private var validUsername = false
   @State private var validPassword = false
-  
-  @State private var validationMessage: ValidationMessage = .firstMessage
   
   var body: some View {
     VStack {
@@ -35,10 +22,10 @@ struct ContentView: View {
         .font(.title)
         .fontWeight(.bold)
       VStack {
-        TextField("Username", text: $username)
-        SecureField("Password", text: $password1)
+        TextField("Username", text: $viewModel.username)
+        SecureField("Password", text: $viewModel.password1)
         
-        SecureField("Retype Password", text: $password2)
+        SecureField("Retype Password", text: $viewModel.password2)
       }
       
       Button {
@@ -48,7 +35,7 @@ struct ContentView: View {
       }
       .padding()
       
-      switch validationMessage {
+      switch viewModel.validationMessage {
       case .firstMessage:
         Text("Enter an email and a password.")
           .foregroundColor(.teal)
@@ -80,17 +67,17 @@ struct ContentView: View {
   
   func checkCredentials() {
     validUsername = validEmail()
-    validPassword = validate(password1: password1, password2: password2)
+    validPassword = validate(password1: viewModel.password1, password2: viewModel.password2)
     
     if validUsername && validPassword {
-      validationMessage = .validCredentials
+      viewModel.validationMessage = .validCredentials
     }
   }
   func validEmail() -> Bool {
-    if username.contains("@") {
+    if viewModel.username.contains("@") {
       return true
     } else {
-      validationMessage = .invalidUsername
+      viewModel.validationMessage = .invalidUsername
       return false
     }
   }
@@ -98,34 +85,34 @@ struct ContentView: View {
   func validate(password1: String, password2: String) -> Bool {
     
     guard password1 == password2 else {
-      validationMessage = .passwordMismatch
+      viewModel.validationMessage = .passwordMismatch
       return false
     }
     
     let amountOfNumbers = password1.filter {"0"..."9" ~= $0 }.count
     print(amountOfNumbers)
     guard amountOfNumbers >= 2 else {
-      validationMessage = .mustHaveTwoNumbers
+      viewModel.validationMessage = .mustHaveTwoNumbers
       return false
     }
     
     let capitalLetterRegEx  = ".*[A-Z]+.*"
     let texttest = NSPredicate(format:"SELF MATCHES %@", capitalLetterRegEx)
     guard texttest.evaluate(with: password1) else {
-      validationMessage = .mustHaveCapital
+      viewModel.validationMessage = .mustHaveCapital
       return false
     }
     
     let specialCharacterRegEx  = ".*[!&^%$#@()/_*+-]+.*"
     let texttest2 = NSPredicate(format:"SELF MATCHES %@", specialCharacterRegEx)
     guard texttest2.evaluate(with: password1) else {
-      validationMessage = .mustHaveSpecialCharacter
+      viewModel.validationMessage = .mustHaveSpecialCharacter
       return false
       
     }
     
     guard password1.count >= 6 else {
-      validationMessage = .mustBe6Characters
+      viewModel.validationMessage = .mustBe6Characters
       return false
     }
     
@@ -133,8 +120,8 @@ struct ContentView: View {
   }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct LoginView_Previews: PreviewProvider {
   static var previews: some View {
-    ContentView()
+    LoginView()
   }
 }
