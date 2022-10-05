@@ -22,17 +22,29 @@ struct LoginView: View {
         .fontWeight(.bold)
       VStack {
         TextField("Username", text: $viewModel.username)
+          .padding(.leading)
+          .padding(.top, 8)
+        Divider()
         SecureField("Password", text: $viewModel.password1)
-        
+          .padding(.leading)
+        Divider()
         SecureField("Retype Password", text: $viewModel.password2)
+            .padding(.leading)
+            .padding(.bottom, 8)
       }
+      .background(.ultraThickMaterial, in: RoundedRectangle(
+        cornerRadius: 16,
+        style: .continuous))
       
-      Button {
+      Button("Create User") {
         viewModel.checkCredentials()
-      } label: {
-        Text("Create User")
       }
-      .padding()
+      .padding(8)
+      .background(Color(.systemTeal))
+      .foregroundColor(.white)
+      .font(.title2)
+      .fontWeight(.semibold)
+      .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
       
       switch viewModel.validationMessage {
       case .firstMessage:
